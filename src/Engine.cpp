@@ -32,7 +32,7 @@ void Engine::runGameLoop() {
 		auto start = std::chrono::high_resolution_clock::now();
 		doThing();
 		auto end = std::chrono::high_resolution_clock::now();
-		while (std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() < (1000. / 60.)) {
+		while (std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() < (1000. / fps)) {
 			end = std::chrono::high_resolution_clock::now();
 		}
 	}
