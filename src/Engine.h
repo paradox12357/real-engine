@@ -12,8 +12,6 @@ namespace realengine {
 
 		void doThing();
 
-		auto awake_time();
-
 		void runGameLoop();
 	};
 }

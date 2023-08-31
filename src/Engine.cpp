@@ -7,24 +7,25 @@
 using namespace std;
 using namespace realengine;
 
-//unique_ptr<GraphicsManager> gGraphics = make_unique<GraphicsManager>();
-
-void Engine::startup() {
+void Engine::startup() { // runs at the beginning of the game loop, creates managers.
+	createWindow();
 }
 
-void Engine::shutdown() {
-}
-
-void Engine::doThing() {
+void Engine::shutdown() { // runs at the end of the game loop
 
 }
 
-auto Engine::awake_time() {
-	using std::chrono::operator""ms;
-	return std::chrono::steady_clock::now() + 17ms;
+//int x = 0;
+void Engine::doThing() { // test function, currently set up to print a tick every frame and tock every second to verify timing.
+	/*x++;
+	std::cout << "tick" << std::endl;
+	if (x == 60) {
+		x = 0;
+		std::cout << "tock" << std::endl;
+	}*/
 }
 
-void Engine::runGameLoop() {
+void Engine::runGameLoop() { // main game loop, calls all other functions and managers.
 
 	startup();
 	bool running = true;

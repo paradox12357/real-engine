@@ -1,4 +1,5 @@
 #pragma once
+void createWindow();
 namespace {
 	struct {
 		int window_width = 640;
