@@ -5,5 +5,4 @@
 namespace {
     typedef double real;
     typedef std::string string;
-  //  class GraphicsManager;
 }
