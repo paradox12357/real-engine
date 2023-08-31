@@ -1,6 +1,7 @@
 # Xmake
 /build
 /.xmake
+/vsxmake2022
 
 # macOS
 .DS_Store
