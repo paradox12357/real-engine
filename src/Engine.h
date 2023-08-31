@@ -1,9 +1,10 @@
 #pragma once
+#include "GraphicsManager.h"
 namespace realengine {
 	class Engine {
 	private:
+		const double fps = 60.;
 	public:
-		//unique_ptr<GraphicsManager> gGraphics = make_unique<GraphicsManager>();
 
 		void startup();
 

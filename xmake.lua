@@ -11,6 +11,7 @@ target("realengine")
     -- Declare our engine's header path.
     -- This allows targets that depend on the engine to #include them.
     add_includedirs("src", {public = true})
+    add_packages("glfw", {public = true})
     
     -- Add all .cpp files in the `src` directory.
     add_files("src/*.cpp")
@@ -22,4 +23,3 @@ target("helloworld")
     add_deps("realengine")
     
     add_files("demo/helloworld.cpp")
-    add_packages("glfw")
