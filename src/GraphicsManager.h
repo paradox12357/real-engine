@@ -1,10 +1,15 @@
 #pragma once
-void createWindow();
-namespace {
-	struct {
-		int window_width = 640;
-		int window_height = 480;
-		const char* window_name = "Real Engine";
-		bool window_fullscreen = false;
-	} defaults;
+#define GLFW_INCLUDE_NONE
+#include "GLFW/glfw3.h"
+#include "Engine.h"
+namespace graphics{
+	class GraphicsManager {
+	private:
+		GLFWwindow* window;
+	public:
+		void GraphicsManager::initializeGraphicsManager(realengine::Engine e);
+		void GraphicsManager::shutdownGraphicsManager();
+		void GraphicsManager::createWindow();
+		GLFWwindow* GraphicsManager::getWindow();
+	};
 }

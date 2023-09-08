@@ -1,9 +1,12 @@
 #pragma once
 #include <iostream>
-#include <Engine.h>
+#include <Types.h>
+using namespace std;
 int main( int argc, const char* argv[] ) {
+    engine = std::make_unique<realengine::Engine>();
     std::cout << "Hello, World!\n";
-    std::unique_ptr<realengine::Engine> engine = std::make_unique<realengine::Engine>();
-    (*engine).runGameLoop();
+    (*engine).runGameLoop( [&]( ) {
+        cout << input::InputManager::KeyIsPressed(GLFW_KEY_A) << endl;
+        });
     return 0;
 }

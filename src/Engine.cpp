@@ -1,41 +1,58 @@
-
+#pragma once
 #include <iostream>
 #include <chrono>
 #include <thread>
 #include "Types.h"
-#include "Engine.h"
+
 using namespace std;
 using namespace realengine;
+std::unique_ptr<graphics::GraphicsManager> graphicsManager;
 
 void Engine::startup() { // runs at the beginning of the game loop, creates managers.
-	createWindow();
+	graphicsManager = std::make_unique<graphics::GraphicsManager>();
+	(*graphicsManager).initializeGraphicsManager(*this);
+	input::InputManager::initializeInputManager(*this);
 }
 
 void Engine::shutdown() { // runs at the end of the game loop
-
+	(*graphicsManager).GraphicsManager::shutdownGraphicsManager();
+	input::InputManager::shutdownInputManager();
 }
 
-//int x = 0;
-void Engine::doThing() { // test function, currently set up to print a tick every frame and tock every second to verify timing.
-	/*x++;
-	std::cout << "tick" << std::endl;
+int x = 0;
+void Engine::doThing(int ticktock) { // test function, currently set up to print a tick every frame and tock every second to verify timing. 0 = tick and tock, 1 = tick, 2 = tock
+	x++;
+	if (ticktock == 0 || ticktock == 1)
+		std::cout << "tick" << std::endl;
 	if (x == 60) {
 		x = 0;
-		std::cout << "tock" << std::endl;
-	}*/
+		if (ticktock == 0 || ticktock == 2)
+			std::cout << "tock" << std::endl;
+	}
 }
 
-void Engine::runGameLoop() { // main game loop, calls all other functions and managers.
+GLFWwindow* Engine::getWindow() {
+	return (*graphicsManager).getWindow();
+}
+
+void Engine::runGameLoop(const UpdateCallback& callback) { // main game loop, calls all other functions and managers.
 
 	startup();
-	bool running = true;
-	while (running) {
+	while (true) {
 		auto start = std::chrono::high_resolution_clock::now();
-		doThing();
+		//run loop here
+		//doThing(2);
+		input::InputManager::Update();
+		callback();
+		//end loop code here
 		auto end = std::chrono::high_resolution_clock::now();
 		while (std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() < (1000. / fps)) {
 			end = std::chrono::high_resolution_clock::now();
 		}
+		if (input::InputManager::KeyIsPressed(GLFW_KEY_ESCAPE))
+			break;
+		if (glfwWindowShouldClose(getWindow()))
+			break;
 	}
 	shutdown();
 }
