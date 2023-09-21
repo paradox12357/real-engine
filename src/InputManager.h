@@ -6,9 +6,9 @@ namespace input{
 	class InputManager {
 	private:
 	public:
-		static void InputManager::initializeInputManager(realengine::Engine e);
-		static void InputManager::shutdownInputManager();
-		static void InputManager::Update();
-		static bool InputManager::KeyIsPressed(int name);
+		static void initializeInputManager(realengine::Engine e);
+		static void shutdownInputManager();
+		static void Update();
+		static bool KeyIsPressed(int name);
 	};
 }
