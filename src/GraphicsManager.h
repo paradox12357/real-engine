@@ -7,9 +7,9 @@ namespace graphics{
 	private:
 		GLFWwindow* window;
 	public:
-		void GraphicsManager::initializeGraphicsManager(realengine::Engine e);
-		void GraphicsManager::shutdownGraphicsManager();
-		void GraphicsManager::createWindow();
-		GLFWwindow* GraphicsManager::getWindow();
+		void initializeGraphicsManager(realengine::Engine e);
+		void shutdownGraphicsManager();
+		void createWindow();
+		GLFWwindow* getWindow();
 	};
 }
