@@ -5,7 +5,6 @@
 #include "Engine.h"
 #include "InputManager.h"
 #include "GLFW/glfw3.h"
-#define GLFW_INCLUDE_NONE
 #include <functional>
 namespace {
     typedef double real;

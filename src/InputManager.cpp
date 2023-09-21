@@ -1,4 +1,3 @@
-#pragma once
 #include "Types.h"
 using namespace std;
 using namespace input;
