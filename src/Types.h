@@ -10,11 +10,13 @@
 #include "glfw3webgpu.h"
 #include "glm/glm.hpp"
 #include <functional>
+#include <algorithm>
 namespace {
     typedef double real;
     typedef std::string string;
 	typedef glm::vec2 vec2;
 	typedef glm::vec3 vec3;
+	typedef glm::mat4 mat4;
 	struct {
 		int window_width = 640;
 		int window_height = 480;

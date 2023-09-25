@@ -3,8 +3,10 @@
 #include "Engine.h"
 #include "webgpu/webgpu.h"
 #include "glfw3webgpu.h"
+#include "glm/glm.hpp"
 #include <string>
 using std::string;
+typedef glm::mat4 mat4;
 namespace graphics{
 	class GraphicsManager {
 	private:
@@ -19,6 +21,9 @@ namespace graphics{
 			image(const  image&) = delete;
 			image& operator=(const  image&) = delete;
 		};
+		struct Uniforms {
+			mat4 projection;
+		};
 		GLFWwindow* window;
 		WGPUInstance instance;
 		WGPUSurface surface;
@@ -30,12 +35,18 @@ namespace graphics{
 		WGPUBuffer uniform_buffer;
 		WGPUSampler sampler;
 		WGPUShaderModule shader_module;
+		WGPURenderPipeline pipeline;
 		std::unordered_map< string, image > images;
 	public:
+		struct Sprite {
+			double x, y, z, scale; //z is between 0 and 1
+			image i;
+		};
 		void initializeGraphicsManager(realengine::Engine e);
 		void shutdownGraphicsManager();
 		void createWindow();
 		GLFWwindow* getWindow();
 		bool LoadTexture(const string& name, const string& path);
+		void Draw(const std::vector< Sprite >& sprites);
 	};
 }
