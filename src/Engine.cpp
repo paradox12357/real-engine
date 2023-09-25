@@ -5,6 +5,7 @@
 
 using namespace std;
 using namespace realengine;
+using namespace resource;
 std::unique_ptr<graphics::GraphicsManager> graphicsManager;
 
 void Engine::startup() { // runs at the beginning of the game loop, creates managers.
