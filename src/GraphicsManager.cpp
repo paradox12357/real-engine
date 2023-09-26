@@ -56,7 +56,7 @@ void GraphicsManager::initializeGraphicsManager(realengine::Engine e) {
     // Start with an identity matrix.
     uniforms.projection = mat4{ 1 };
     // Scale x and y by 1/100.
-    uniforms.projection[0][0] = uniforms.projection[1][1] = 1. / 100.;
+    uniforms.projection[0][0] = uniforms.projection[1][1] = 1.f / 100.f;
     // Scale the long edge by an additional 1/(long/short) = short/long.
     if (defaults.window_width < defaults.window_height) {
         uniforms.projection[1][1] *= defaults.window_width;

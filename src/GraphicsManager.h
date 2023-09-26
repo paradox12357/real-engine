@@ -18,11 +18,11 @@ namespace graphics{
 				wgpuTextureDestroy(texture);
 				wgpuTextureRelease(texture);
 			}
-			image(const  image&) = delete;
-			image& operator=(const  image&) = delete;
+			//image(const  image&) = delete;
+			//image& operator=(const  image&) = delete;
 		};
 		struct Uniforms {
-			mat4 projection;
+			mat4 projection{};
 		};
 		GLFWwindow* window;
 		WGPUInstance instance;
