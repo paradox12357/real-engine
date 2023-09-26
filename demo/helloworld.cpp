@@ -1,4 +1,3 @@
-#pragma once
 #include <iostream>
 #include <Types.h>
 using namespace std;

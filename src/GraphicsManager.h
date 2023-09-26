@@ -14,16 +14,20 @@ namespace graphics{
 			int width;
 			int height;
 			WGPUTexture texture;
-			~image() {
+			//~image() {
 				//wgpuTextureDestroy(texture);
 				//wgpuTextureRelease(texture);
-			}
+			//}
 			//image(const  image&) = delete;
 			//image& operator=(const  image&) = delete;
 		};
 		struct Uniforms {
 			mat4 projection{};
 		};
+        WGPUTexture tex;
+        WGPUBuffer instance_buffer;
+        WGPURenderPassEncoder render_pass;
+        WGPUCommandEncoder encoder;
 		GLFWwindow* window;
 		WGPUInstance instance;
 		WGPUSurface surface;
