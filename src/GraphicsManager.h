@@ -15,8 +15,8 @@ namespace graphics{
 			int height;
 			WGPUTexture texture;
 			~image() {
-				wgpuTextureDestroy(texture);
-				wgpuTextureRelease(texture);
+				//wgpuTextureDestroy(texture);
+				//wgpuTextureRelease(texture);
 			}
 			//image(const  image&) = delete;
 			//image& operator=(const  image&) = delete;
@@ -42,11 +42,12 @@ namespace graphics{
 			double x, y, z, scale; //z is between 0 and 1
 			image i;
 		};
+		std::unordered_map<string, graphics::GraphicsManager::Sprite> sprites;
 		void initializeGraphicsManager(realengine::Engine e);
 		void shutdownGraphicsManager();
 		void createWindow();
 		GLFWwindow* getWindow();
 		bool LoadTexture(const string& name, const string& path);
-		void Draw(const std::vector< Sprite >& sprites);
+		void Draw(std::vector< Sprite >& spritesVector);
 	};
 }

@@ -44,8 +44,12 @@ void Engine::runGameLoop(const UpdateCallback& callback) { // main game loop, ca
 		//doThing(2);
 		input::InputManager::Update();
 		callback();
-		graphics::GraphicsManager::Sprite sprite;
-		//(*graphicsManager).Draw(sprite);
+		(*graphicsManager).LoadTexture("test", resource::ResourceManager::getPath("G:/Real Engine/assets/image.png"));
+		std::vector< graphics::GraphicsManager::Sprite > spritesVector;
+		for (const auto& [key, value] : (*graphicsManager).sprites) {
+			spritesVector.push_back(value);
+		}
+		(*graphicsManager).Draw(spritesVector);
 		//end loop code here
 		auto end = std::chrono::high_resolution_clock::now();
 		while (std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() < (1000. / fps)) {

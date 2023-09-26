@@ -66,7 +66,6 @@ void GraphicsManager::initializeGraphicsManager(realengine::Engine e) {
         uniforms.projection[0][0] *= defaults.window_height;
         uniforms.projection[0][0] /= defaults.window_width;
     }
-    wgpuQueueWriteBuffer(queue, uniform_buffer, 0, &uniforms, sizeof(Uniforms));
     window = NULL;
     createWindow();
     instance = wgpuCreateInstance(to_ptr(WGPUInstanceDescriptor{}));
@@ -120,6 +119,7 @@ void GraphicsManager::initializeGraphicsManager(realengine::Engine e) {
         .usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform,
         .size = sizeof(Uniforms)
     }));
+    wgpuQueueWriteBuffer(queue, uniform_buffer, 0, &uniforms, sizeof(Uniforms));
     sampler = wgpuDeviceCreateSampler(device, to_ptr(WGPUSamplerDescriptor{
     .addressModeU = WGPUAddressMode_ClampToEdge,
     .addressModeV = WGPUAddressMode_ClampToEdge,
@@ -255,26 +255,6 @@ void GraphicsManager::initializeGraphicsManager(realengine::Engine e) {
                 }})
             })
         }));
-    string path = resource::ResourceManager::getPath("/assets/image.png");
-    int widthi, heighti, channels;
-    unsigned char* data = stbi_load(path.c_str(), &widthi, &heighti, &channels, 4);
-    WGPUTexture tex = wgpuDeviceCreateTexture(device, to_ptr(WGPUTextureDescriptor{
-        .usage = WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst,
-        .dimension = WGPUTextureDimension_2D,
-        .size = { (uint32_t)widthi, (uint32_t)heighti, 1 },
-        .format = WGPUTextureFormat_RGBA8Unorm,
-        .mipLevelCount = 1,
-        .sampleCount = 1
-    }));
-    wgpuQueueWriteTexture(
-        queue,
-        to_ptr<WGPUImageCopyTexture>({ .texture = tex }),
-        data,
-        widthi* heighti * 4,
-        to_ptr<WGPUTextureDataLayout>({ .bytesPerRow = (uint32_t)(widthi * 4), .rowsPerImage = (uint32_t)heighti }),
-        to_ptr(WGPUExtent3D{ (uint32_t)widthi, (uint32_t)heighti, 1 })
-    );
-    stbi_image_free(data);
 }
 void GraphicsManager::shutdownGraphicsManager() {
     glfwTerminate();
@@ -307,13 +287,40 @@ GLFWwindow* GraphicsManager::getWindow() {
     return window;
 }
 bool GraphicsManager::LoadTexture(const string& name, const string& path) {
+    if (sprites.contains(name) == 1) {
+        return false;
+    }
+    int width, height, channels;
+    unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 4);
+    WGPUTexture tex = wgpuDeviceCreateTexture(device, to_ptr(WGPUTextureDescriptor{
+        .usage = WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst,
+        .dimension = WGPUTextureDimension_2D,
+        .size = { (uint32_t)width, (uint32_t)height, 1 },
+        .format = WGPUTextureFormat_RGBA8Unorm,
+        .mipLevelCount = 1,
+        .sampleCount = 1
+        }));
+    wgpuQueueWriteTexture(
+        queue,
+        to_ptr<WGPUImageCopyTexture>({ .texture = tex }),
+        data,
+        width * height * 4,
+        to_ptr<WGPUTextureDataLayout>({ .bytesPerRow = (uint32_t)(width * 4), .rowsPerImage = (uint32_t)height }),
+        to_ptr(WGPUExtent3D{ (uint32_t)width, (uint32_t)height, 1 })
+    );
+    graphics::GraphicsManager::Sprite sprite;
+    sprite.i.texture = tex;
+    sprite.i.height = height;
+    sprite.i.width = width;
+    sprites.insert(std::make_pair(name, sprite));
+    stbi_image_free(data);
     return true;
 }
 
-void GraphicsManager::Draw(const std::vector< Sprite >& sprites) {
+void GraphicsManager::Draw(std::vector< Sprite >& spritesVector) {
     WGPUBuffer instance_buffer = wgpuDeviceCreateBuffer(device, to_ptr<WGPUBufferDescriptor>({
     .usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex,
-    .size = sizeof(InstanceData) * sprites.size()
+    .size = sizeof(InstanceData) * spritesVector.size()
         }));
     WGPUCommandEncoder encoder = wgpuDeviceCreateCommandEncoder(device, nullptr);
     WGPUTextureView current_texture_view = wgpuSwapChainGetCurrentTextureView(swapchain);
@@ -330,10 +337,11 @@ void GraphicsManager::Draw(const std::vector< Sprite >& sprites) {
     }));
     wgpuRenderPassEncoderSetPipeline(render_pass, pipeline);
     wgpuRenderPassEncoderSetVertexBuffer(render_pass, 0 /* slot */, vertex_buffer, 0, 4 * 4 * sizeof(float));
-    wgpuRenderPassEncoderSetVertexBuffer(render_pass, 1 /* slot */, uniform_buffer, 0, sizeof(InstanceData) * sprites.size());
-    std::sort(sprites.begin(), sprites.end(), [](const Sprite& lhs, const Sprite& rhs) { return lhs.z > rhs.z; });
+    wgpuRenderPassEncoderSetVertexBuffer(render_pass, 1 /* slot */, uniform_buffer, 0, sizeof(InstanceData) * spritesVector.size());
+    std::sort(spritesVector.begin(), spritesVector.end(), [](const Sprite& lhs, const Sprite& rhs) { return lhs.z > rhs.z; });
+    WGPUBindGroup bind_group;
     int i = 0;
-    for (const auto & sprite : sprites) {
+    for (const auto & sprite : spritesVector) {
         vec2 scale;
         if (sprite.i.width < sprite.i.height) {
             scale = vec2(real(sprite.i.width) / sprite.i.height, 1.0);
@@ -345,7 +353,7 @@ void GraphicsManager::Draw(const std::vector< Sprite >& sprites) {
         wgpuQueueWriteBuffer(queue, instance_buffer, i * sizeof(InstanceData), &sprite.i, sizeof(InstanceData));
         i++;
         auto layout = wgpuRenderPipelineGetBindGroupLayout(pipeline, 0);
-        WGPUBindGroup bind_group = wgpuDeviceCreateBindGroup(device, to_ptr(WGPUBindGroupDescriptor{
+        bind_group = wgpuDeviceCreateBindGroup(device, to_ptr(WGPUBindGroupDescriptor{
             .layout = layout,
             .entryCount = 3,
             // The entries `.binding` matches what we wrote in the shader.
@@ -366,16 +374,16 @@ void GraphicsManager::Draw(const std::vector< Sprite >& sprites) {
                 })
             }));
         wgpuRenderPassEncoderSetBindGroup(render_pass, 0, bind_group, 0, nullptr);
-        wgpuBindGroupLayoutRelease(layout);
+        //wgpuBindGroupLayoutRelease(layout);
         wgpuRenderPassEncoderDraw(render_pass, 4, 1, 0, i);
-        wgpuBindGroupRelease(bind_group);
     }
     wgpuRenderPassEncoderEnd(render_pass);
     WGPUCommandBuffer command = wgpuCommandEncoderFinish(encoder, nullptr);
     wgpuQueueSubmit(queue, 1, &command);
     wgpuSwapChainPresent(swapchain);
-    wgpuBufferRelease(instance_buffer);
-    wgpuTextureViewRelease(current_texture_view);
-    wgpuCommandEncoderRelease(encoder);
-    wgpuRenderPassEncoderRelease(render_pass);
+    //wgpuBufferRelease(instance_buffer);
+    //wgpuTextureViewRelease(current_texture_view);
+    //wgpuCommandEncoderRelease(encoder);
+    //wgpuBindGroupRelease(bind_group);
+    //wgpuRenderPassEncoderRelease(render_pass);
 }

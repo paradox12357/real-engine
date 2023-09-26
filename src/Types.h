@@ -11,6 +11,7 @@
 #include "glm/glm.hpp"
 #include <functional>
 #include <algorithm>
+#include <vector>
 namespace {
     typedef double real;
     typedef std::string string;
