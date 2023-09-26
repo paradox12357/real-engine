@@ -313,6 +313,10 @@ bool GraphicsManager::LoadTexture(const string& name, const string& path) {
     sprite.i.texture = tex;
     sprite.i.height = height;
     sprite.i.width = width;
+    sprite.x = 0.5;
+    sprite.y = 0.5;
+    sprite.z = 0.5;
+    sprite.scale = 1.0;
     sprites.insert(std::make_pair(name, sprite));
     stbi_image_free(data);
     return true;
