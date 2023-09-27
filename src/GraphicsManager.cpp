@@ -348,7 +348,7 @@ void GraphicsManager::Draw(std::vector< Sprite >& spritesVector) {
     wgpuRenderPassEncoderSetPipeline(render_pass, pipeline);
     wgpuRenderPassEncoderSetVertexBuffer(render_pass, 0 /* slot */, vertex_buffer, 0, 4 * 4 * sizeof(float));
     cout << "Problem #6" << endl;
-    wgpuRenderPassEncoderSetVertexBuffer(render_pass, 1 /* slot */, uniform_buffer, 0, sizeof(InstanceData) * spritesVector.size());
+    wgpuRenderPassEncoderSetVertexBuffer(render_pass, 1 /* slot */, instance_buffer, 0, sizeof(InstanceData) * spritesVector.size());
     std::sort(spritesVector.begin(), spritesVector.end(), [](const Sprite& lhs, const Sprite& rhs) { return lhs.z > rhs.z; });
     WGPUBindGroup bind_group;
     cout << "Problem #7" << endl;
@@ -394,9 +394,13 @@ void GraphicsManager::Draw(std::vector< Sprite >& spritesVector) {
     }
     cout << "Problem #8" << endl;
     wgpuRenderPassEncoderEnd(render_pass);
+    cout << "Problem #11" << endl;
     WGPUCommandBuffer command = wgpuCommandEncoderFinish(encoder, nullptr);
+    cout << "Problem #12" << endl;
     wgpuQueueSubmit(queue, 1, &command);
+    cout << "Problem #13" << endl;
     wgpuSwapChainPresent(swapchain);
+    cout << "Problem #14" << endl;
     //wgpuBufferRelease(instance_buffer);
     //wgpuTextureViewRelease(current_texture_view);
     //wgpuCommandEncoderRelease(encoder);
