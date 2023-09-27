@@ -9,7 +9,6 @@ set_warnings("all") -- warn about many things
 target("realengine")
     set_kind("static")
     set_languages("cxx20")
-    set_rundir("$(projectdir)")
     
     -- Declare our engine's header path.
     -- This allows targets that depend on the engine to #include them.

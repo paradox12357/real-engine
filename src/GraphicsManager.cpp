@@ -300,7 +300,6 @@ bool GraphicsManager::LoadTexture(const string& name, const string& path) {
         .mipLevelCount = 1,
         .sampleCount = 1
         }));
-    cout << tex << endl;
     wgpuQueueWriteTexture(
         queue,
         to_ptr<WGPUImageCopyTexture>({ .texture = tex }),
@@ -316,24 +315,20 @@ bool GraphicsManager::LoadTexture(const string& name, const string& path) {
     sprite.x = 0.5;
     sprite.y = 0.5;
     sprite.z = 0.5;
-    sprite.scale = 1.0;
+    sprite.scale = 100.0;
     sprites.insert(std::make_pair(name, sprite));
     stbi_image_free(data);
     return true;
 }
 
 void GraphicsManager::Draw(std::vector< Sprite >& spritesVector) {
-    cout << "Problem #1" << endl;
     encoder = wgpuDeviceCreateCommandEncoder(device, nullptr);
-    cout << "Problem #2" << endl;
     instance_buffer = wgpuDeviceCreateBuffer(device, to_ptr<WGPUBufferDescriptor>({
     .usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex,
     .size = sizeof(InstanceData) * spritesVector.size()
         }));
-    cout << "Problem #3" << endl;
     WGPUTextureView current_texture_view = wgpuSwapChainGetCurrentTextureView(swapchain);
     double red = 0.0, green = 0.0, blue = 0.0;
-    cout << "Problem #4" << endl;
     render_pass = wgpuCommandEncoderBeginRenderPass(encoder, to_ptr<WGPURenderPassDescriptor>({
     .colorAttachmentCount = 1,
     .colorAttachments = to_ptr<WGPURenderPassColorAttachment>({{
@@ -344,14 +339,11 @@ void GraphicsManager::Draw(std::vector< Sprite >& spritesVector) {
         .clearValue = WGPUColor{ red, green, blue, 1.0 }
         }})
     }));
-    cout << "Problem #5" << endl;
     wgpuRenderPassEncoderSetPipeline(render_pass, pipeline);
     wgpuRenderPassEncoderSetVertexBuffer(render_pass, 0 /* slot */, vertex_buffer, 0, 4 * 4 * sizeof(float));
-    cout << "Problem #6" << endl;
     wgpuRenderPassEncoderSetVertexBuffer(render_pass, 1 /* slot */, instance_buffer, 0, sizeof(InstanceData) * spritesVector.size());
     std::sort(spritesVector.begin(), spritesVector.end(), [](const Sprite& lhs, const Sprite& rhs) { return lhs.z > rhs.z; });
     WGPUBindGroup bind_group;
-    cout << "Problem #7" << endl;
     int i = 0;
     for (const auto & sprite : spritesVector) {
         vec2 scale;
@@ -359,17 +351,14 @@ void GraphicsManager::Draw(std::vector< Sprite >& spritesVector) {
             scale = vec2(real(sprite.i.width) / sprite.i.height, 1.0);
         }
         else {
-            scale = vec2(1.0, real(sprite.i.height) / sprite.i.width);
+            scale = vec2(100.0, real(sprite.i.height) / sprite.i.width);
         }
         scale *= sprite.scale;
         InstanceData data;
-        data.translation = vec3(0,0,0);
-        data.scale = vec2(scale, scale);
+        data.translation = vec3(0.0f,0.0f,0.0f);
+        data.scale = scale;
         wgpuQueueWriteBuffer(queue, instance_buffer, i * sizeof(InstanceData), &data, sizeof(InstanceData));
-        i++;
         auto layout = wgpuRenderPipelineGetBindGroupLayout(pipeline, 0);
-        cout << "Problem #9" << endl;
-        cout << sprite.i.texture << endl;
         bind_group = wgpuDeviceCreateBindGroup(device, to_ptr(WGPUBindGroupDescriptor{
             .layout = layout,
             .entryCount = 3,
@@ -390,20 +379,15 @@ void GraphicsManager::Draw(std::vector< Sprite >& spritesVector) {
                 }
                 })
             }));
-        cout << "Problem #10" << endl;
         wgpuRenderPassEncoderSetBindGroup(render_pass, 0, bind_group, 0, nullptr);
         //wgpuBindGroupLayoutRelease(layout);
         wgpuRenderPassEncoderDraw(render_pass, 4, 1, 0, i);
+        i++;
     }
-    cout << "Problem #8" << endl;
     wgpuRenderPassEncoderEnd(render_pass);
-    cout << "Problem #11" << endl;
     WGPUCommandBuffer command = wgpuCommandEncoderFinish(encoder, nullptr);
-    cout << "Problem #12" << endl;
     wgpuQueueSubmit(queue, 1, &command);
-    cout << "Problem #13" << endl;
     wgpuSwapChainPresent(swapchain);
-    cout << "Problem #14" << endl;
     //wgpuBufferRelease(instance_buffer);
     //wgpuTextureViewRelease(current_texture_view);
     //wgpuCommandEncoderRelease(encoder);
