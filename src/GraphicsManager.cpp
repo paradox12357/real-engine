@@ -362,7 +362,10 @@ void GraphicsManager::Draw(std::vector< Sprite >& spritesVector) {
             scale = vec2(1.0, real(sprite.i.height) / sprite.i.width);
         }
         scale *= sprite.scale;
-        wgpuQueueWriteBuffer(queue, instance_buffer, i * sizeof(InstanceData), &sprite.i, sizeof(InstanceData));
+        InstanceData data;
+        data.translation = vec3(0,0,0);
+        data.scale = vec2(scale, scale);
+        wgpuQueueWriteBuffer(queue, instance_buffer, i * sizeof(InstanceData), &data, sizeof(InstanceData));
         i++;
         auto layout = wgpuRenderPipelineGetBindGroupLayout(pipeline, 0);
         cout << "Problem #9" << endl;

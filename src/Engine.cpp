@@ -44,8 +44,8 @@ void Engine::runGameLoop(const UpdateCallback& callback) { // main game loop, ca
 		//doThing(2);
 		input::InputManager::Update();
 		callback();
-		(*graphicsManager).LoadTexture("test", resource::ResourceManager::getPath("G:/Real Engine/assets/image.png"));
-        //(*graphicsManager).LoadTexture("test", resource::ResourceManager::getPath("/Users/eldon/Documents/GitHub/real-engine/assets/image.png"));
+		//(*graphicsManager).LoadTexture("test", resource::ResourceManager::getPath("G:/Real Engine/assets/image.png"));
+        (*graphicsManager).LoadTexture("test", resource::ResourceManager::getPath("/Users/eldon/Documents/GitHub/real-engine/assets/image.png"));
 		std::vector< graphics::GraphicsManager::Sprite > spritesVector;
 		for (const auto& [key, value] : (*graphicsManager).sprites) {
 			spritesVector.push_back(value);
