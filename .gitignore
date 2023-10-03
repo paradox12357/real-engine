@@ -13,3 +13,4 @@ helloworld.xcodeproj
 .DS_Store
 # Windows
 Thumbs.db
+.vscode/c_cpp_properties.json
