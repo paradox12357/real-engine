@@ -12,11 +12,16 @@ void Engine::startup() { // runs at the beginning of the game loop, creates mana
 	graphicsManager = std::make_unique<graphics::GraphicsManager>();
 	(*graphicsManager).initializeGraphicsManager(*this);
 	input::InputManager::initializeInputManager(*this);
+	resource::ResourceManager::initializeResourceManager();
+	ecs::ECSManager::initializeECSManager();
+
 }
 
 void Engine::shutdown() { // runs at the end of the game loop
 	(*graphicsManager).GraphicsManager::shutdownGraphicsManager();
 	input::InputManager::shutdownInputManager();
+	resource::ResourceManager::shutdownResourceManager();
+	ecs::ECSManager::shutdownECSManager();
 }
 
 int x = 0;
@@ -44,8 +49,9 @@ void Engine::runGameLoop(const UpdateCallback& callback) { // main game loop, ca
 		//doThing(2);
 		input::InputManager::Update();
 		callback();
-		(*graphicsManager).LoadTexture("test", resource::ResourceManager::getPath("assets/image.png"));
+		(*graphicsManager).LoadTexture("test", resource::ResourceManager::getPath("assets/image.png"), 0.5, 0.5, 0.1, 50.0);
 		std::vector< graphics::GraphicsManager::Sprite > spritesVector;
+		(*graphicsManager).LoadTexture("test2", resource::ResourceManager::getPath("assets/image2.png"), 0.5, 0.5, 0.2, 1.0);
 		for (const auto& [key, value] : (*graphicsManager).sprites) {
 			spritesVector.push_back(value);
 		}

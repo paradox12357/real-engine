@@ -286,7 +286,7 @@ void GraphicsManager::createWindow() {
 GLFWwindow* GraphicsManager::getWindow() {
     return window;
 }
-bool GraphicsManager::LoadTexture(const string& name, const string& path) {
+bool GraphicsManager::LoadTexture(const string& name, const string& path, double x, double y, double z, double scale) {
     if (sprites.contains(name) == 1) {
         return false;
     }
@@ -312,10 +312,10 @@ bool GraphicsManager::LoadTexture(const string& name, const string& path) {
     sprite.i.texture = tex;
     sprite.i.height = height;
     sprite.i.width = width;
-    sprite.x = 0.5;
-    sprite.y = 0.5;
-    sprite.z = 0.5;
-    sprite.scale = 100.0;
+    sprite.x = x;
+    sprite.y = y;
+    sprite.z = z;
+    sprite.scale = scale;
     sprites.insert(std::make_pair(name, sprite));
     stbi_image_free(data);
     return true;

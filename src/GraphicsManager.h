@@ -51,7 +51,7 @@ namespace graphics{
 		void shutdownGraphicsManager();
 		void createWindow();
 		GLFWwindow* getWindow();
-		bool LoadTexture(const string& name, const string& path);
+		bool LoadTexture(const string& name, const string& path, double x, double y, double z, double scale);
 		void Draw(std::vector< Sprite >& spritesVector);
 	};
 }
