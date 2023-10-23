@@ -18,7 +18,7 @@ public:
     std::unordered_map< EntityID, T > data;
     bool Has(EntityID e) const override { return data.count(e) > 0; };
     void Drop(EntityID e) override { data.erase(e); };
-    void Add(EntityID e) override { data[e] = T; };
+    //void Add(EntityID e) override { data[e] = T; };
 };
 template< typename T >
 std::unordered_map< EntityID, T >&
