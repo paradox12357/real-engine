@@ -52,6 +52,7 @@ namespace {
     )";
 }
 void GraphicsManager::initializeGraphicsManager(realengine::Engine e) {
+    red = 0, green = 0, blue = 0;
     Uniforms uniforms;
     // Start with an identity matrix.
     uniforms.projection = mat4{ 1 };
@@ -286,10 +287,14 @@ void GraphicsManager::createWindow() {
 GLFWwindow* GraphicsManager::getWindow() {
     return window;
 }
-bool GraphicsManager::LoadTexture(const string& name, const string& path, double x, double y, double z, double scale) {
+graphics::GraphicsManager::Sprite GraphicsManager::LoadTexture(const string& name, const string& path, double x, double y, double z, double scale, bool draw) {
+    graphics::GraphicsManager::Sprite n;
     if (sprites.contains(name) == 1) {
-        return false;
+        return n;
     }
+    std::vector<std::type_index> components = { std::type_index(typeid(graphics::GraphicsManager::Sprite)) };
+    EntityID entityID = ecs::Create<graphics::GraphicsManager::Sprite>(components, defaults.m_nextID);
+    defaults.m_nextID++;
     int width, height, channels;
     unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 4);
     tex = wgpuDeviceCreateTexture(device, to_ptr(WGPUTextureDescriptor{
@@ -308,17 +313,17 @@ bool GraphicsManager::LoadTexture(const string& name, const string& path, double
         to_ptr<WGPUTextureDataLayout>({ .bytesPerRow = (uint32_t)(width * 4), .rowsPerImage = (uint32_t)height }),
         to_ptr(WGPUExtent3D{ (uint32_t)width, (uint32_t)height, 1 })
     );
-    graphics::GraphicsManager::Sprite sprite;
-    sprite.i.texture = tex;
-    sprite.i.height = height;
-    sprite.i.width = width;
-    sprite.x = x;
-    sprite.y = y;
-    sprite.z = z;
-    sprite.scale = scale;
-    sprites.insert(std::make_pair(name, sprite));
+    ecs::Get<graphics::GraphicsManager::Sprite>(entityID).i.texture = tex;
+    ecs::Get<graphics::GraphicsManager::Sprite>(entityID).i.height = height;
+    ecs::Get<graphics::GraphicsManager::Sprite>(entityID).i.width = width;
+    ecs::Get<graphics::GraphicsManager::Sprite>(entityID).x = x;
+    ecs::Get<graphics::GraphicsManager::Sprite>(entityID).y = y;
+    ecs::Get<graphics::GraphicsManager::Sprite>(entityID).z = z;
+    ecs::Get<graphics::GraphicsManager::Sprite>(entityID).scale = scale;
+    ecs::Get<graphics::GraphicsManager::Sprite>(entityID).draw = draw;
+    sprites.insert(std::make_pair(name, ecs::Get<graphics::GraphicsManager::Sprite>(entityID)));
     stbi_image_free(data);
-    return true;
+    return ecs::Get<graphics::GraphicsManager::Sprite>(entityID);
 }
 
 void GraphicsManager::Draw(std::vector< Sprite >& spritesVector) {
@@ -328,7 +333,6 @@ void GraphicsManager::Draw(std::vector< Sprite >& spritesVector) {
     .size = sizeof(InstanceData) * spritesVector.size()
         }));
     WGPUTextureView current_texture_view = wgpuSwapChainGetCurrentTextureView(swapchain);
-    double red = 0.0, green = 0.0, blue = 0.0;
     render_pass = wgpuCommandEncoderBeginRenderPass(encoder, to_ptr<WGPURenderPassDescriptor>({
     .colorAttachmentCount = 1,
     .colorAttachments = to_ptr<WGPURenderPassColorAttachment>({{
@@ -354,6 +358,9 @@ void GraphicsManager::Draw(std::vector< Sprite >& spritesVector) {
             scale = vec2(100.0, real(sprite.i.height) / sprite.i.width);
         }
         scale *= sprite.scale;
+        if (!sprite.draw) {
+            scale = vec2(0,0);
+        }
         InstanceData data;
         data.translation = vec3(((sprite.x / 2.0) * defaults.window_width) / 2, ((sprite.y / 2.0) * defaults.window_height) / 2, 0.0f);
         data.scale = scale;

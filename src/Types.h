@@ -21,6 +21,7 @@ namespace {
 	typedef glm::vec3 vec3;
 	typedef glm::mat4 mat4;
 	struct {
+		EntityID m_nextID = -1;
 		int window_width = 640;
 		int window_height = 480;
 		const char* window_name = "Real Engine";

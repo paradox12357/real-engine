@@ -42,16 +42,18 @@ namespace graphics{
 		WGPURenderPipeline pipeline;
 		std::unordered_map< string, image > images;
 	public:
+		double red, green, blue;
 		struct Sprite {
 			double x, y, z, scale; //z is between 0 and 1
 			image i;
+			bool draw;
 		};
 		std::unordered_map<string, graphics::GraphicsManager::Sprite> sprites;
 		void initializeGraphicsManager(realengine::Engine e);
 		void shutdownGraphicsManager();
 		void createWindow();
 		GLFWwindow* getWindow();
-		bool LoadTexture(const string& name, const string& path, double x, double y, double z, double scale);
+		graphics::GraphicsManager::Sprite LoadTexture(const string& name, const string& path, double x, double y, double z, double scale, bool draw);
 		void Draw(std::vector< Sprite >& spritesVector);
 	};
 }
